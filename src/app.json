@@ -1,0 +1,63 @@
+{
+  "pages": [
+    "pages/home/main",
+    "pages/index/main",
+    "pages/activity/main",
+    "pages/activity/hotactiv/main",
+    "pages/activity/explain/main",
+    "pages/activity/apply/main",
+    "pages/activity/activeDetail/main",
+    "pages/activity/gift/main",
+    "pages/activity/rank/main"
+   ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "WeChat",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#999",
+    "backgroundColor": "#fafafa",
+    "selectedColor": "#333",
+    "borderStyle": "white",
+
+    "list": [{
+      "text": "首页",
+      "pagePath": "pages/activity/hotactiv/main",
+      "iconPath": "static/tabs/home.png",
+      "selectedIconPath": "static/tabs/home-active.png"
+    }, {
+      "text": "排行榜",
+      "pagePath": "pages/activity/rank/main",
+      "iconPath": "static/tabs/rank.png",
+      "selectedIconPath": "static/tabs/rank-active.png"
+    }
+    , {
+      "text": "说明",
+      "pagePath":  "pages/activity/explain/main",
+      "iconPath": "static/tabs/orders.png",
+      "selectedIconPath": "static/tabs/orders-active.png"
+    }],
+
+    "items": [{
+      "name": "首页",
+      "pagePath": "pages/index/main",
+      "icon": "static/tabs/home.png",
+      "activeIcon": "static/tabs/home-active.png"
+    }
+    , {
+      "name": "排行榜",
+      "pagePath": "pages/activity/rank/main",
+      "icon": "static/tabs/rank.png",
+      "activeIcon": "static/tabs/rank-active.png"
+    }
+    , {
+      "name": "说明",
+      "pagePath": "pages/activity/explain/main",
+      "icon": "static/tabs/orders.png",
+      "activeIcon": "static/tabs/orders-active.png"
+    }],
+    "position": "bottom"
+  }
+}
