@@ -1,15 +1,27 @@
 {
 	"description": "项目配置文件。",
 	"setting": {
-		"urlCheck": true,
-		"es6": false,
+		"urlCheck": false,
+		"es6": true,
 		"postcss": true,
 		"minified": true,
-		"newFeature": true
+		"newFeature": true,
+		"coverView": true,
+		"autoAudits": false,
+		"showShadowRootInWxmlPanel": true,
+		"scopeDataCheck": false,
+		"checkInvalidKey": true,
+		"checkSiteMap": true,
+		"uploadWithSourceMap": true,
+		"babelSetting": {
+			"ignore": [],
+			"disablePlugins": [],
+			"outputPath": ""
+		}
 	},
 	"miniprogramRoot": "dist/wx/",
 	"compileType": "miniprogram",
-	"appid": "wx37cbfcd4bd9ab7a3",
+	"appid": "wx07c16a86468ddc2f",
 	"projectname": "hongpeng",
 	"simulatorType": "wechat",
 	"simulatorPluginLibVersion": {},
@@ -83,6 +95,69 @@
 					"id": -1,
 					"name": "pages/activity/hotactiv/main",
 					"pathName": "pages/activity/hotactiv/main",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/questionnaire/main",
+					"pathName": "pages/questionnaire/main",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/questionnaire/question1/main",
+					"pathName": "pages/questionnaire/question1/main",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/questionnaire/submitIndex/main",
+					"pathName": "pages/questionnaire/submitIndex/main",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/activity/hotactiv/main",
+					"pathName": "pages/activity/hotactiv/main",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/questionnaire/question2/main",
+					"pathName": "pages/questionnaire/question2/main",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/questionnaire/submitIndex/main",
+					"pathName": "pages/questionnaire/submitIndex/main",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/questionnaire/question4/main",
+					"pathName": "pages/questionnaire/question4/main",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/questionnaire/submitIndex/main",
+					"pathName": "pages/questionnaire/submitIndex/main",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/home/main",
+					"pathName": "pages/home/main",
 					"scene": null
 				}
 			]

@@ -6,15 +6,15 @@
     <div class="content-box">
       <div class="statistical-table">
         <div>
-          <span>60</span>
+          <span>{{totalRoll}}</span>
           <span>已报名</span>
         </div>
         <div>
-          <span>1553</span>
+          <span>{{totalVote}}</span>
           <span>总投票</span>
         </div>
         <div>
-          <span>7008</span>
+          <span>{{totalBrowse}}</span>
           <span>浏览量</span>
         </div>
       </div>
@@ -26,34 +26,27 @@
       </div>
 
       <div class="search-box">
-        <input type="text" />
-        <button>搜索</button>
+        <input type="text" v-model.trim="name" />
+        <button @click="getactivityPlayer">搜索</button>
       </div>
 
       <div class="list-box">
         <div class="tab-nav">
-          <Picker :array="array"></Picker>
+          <Picker :array="array" :selectionIndex="selectionIndex" @passToIndex="getSeletion"></Picker>
         </div>
         <div class="list-data">
           <ul>
-            <li @click="goActiveDetail">
-              <img src="/static/images/user.png" alt />
+            <!--动态渲染数据 -->
+            <li v-for="(item,index) in showDatalist" :key="index" @click="goActiveDetail(item.id,item.activityId)">
+              <img :src="item.coverImg" alt />
               <div class="botton">
-                <span class="name">罗毅</span>
-                <span class="num">33票</span>
-                <div class="vote" @click="sendGift">投票</div>
-              </div>
-            </li>
-
-            <li>
-              <img src="/static/images/user.png" alt />
-              <div class="botton">
-                <span class="name">罗毅</span>
-                <span class="num">33票</span>
-                <div class="vote" @click="sendGift">投票</div>
+                <span class="name">{{item.name}}</span>
+                <span class="num">{{item.ticket}}票</span>
+                <div class="vote">投票</div>
               </div>
             </li>
           </ul>
+          <div class="footer">已经到底部了</div>
         </div>
       </div>
     </div>
@@ -88,13 +81,22 @@ export default {
   props: {},
   data() {
     return {
-      day: "2020-05-31 00:00",
+      totalRoll: null,
+      totalVote: null,
+      totalBrowse: null,
+      allDatalist: [],
+      showDatalist: [],
+      selectionIndex: 0,
+      currrentGroupName: "全部分组",
+      pages: 10,
+      name: "",
+      day: "",
       remianTimes: "",
-      time:'',
+      time: "",
       audioContr: true,
       innerAudioContext: null, // 音频对象
       playImg: "/static/images/yl.jpg",
-
+      listDtat: [],
       images: [
         {
           url:
@@ -113,13 +115,16 @@ export default {
         "课工场华中直营总校",
         "课工场光谷校区",
         "课工场郑州兰德校区",
-        "北大青鸟徐东校区"
-      ]
+        "课工场徐东校区"
+      ],
+    
     };
   },
   computed: {},
   created() {},
-  mounted() {},
+  mounted() {
+    //  this.showData()
+  },
   watch: {
     audioContr(val, oldVal) {
       this.innerAudioContext.offCanplay();
@@ -130,23 +135,116 @@ export default {
       }
     }
   },
+  onLoad() {
+    this.getALLactivityPlayer();
+    this.getHot();
+  },
+  onReady() {
+    
+     
+  },
+
   onShow() {
     // 倒计时
-    this.getRemianTimes(this.day);
-     //展示雪花    
-    this.$snow.play();
-    // 放在created 一进入就会播放?
-     this.creatAudio();
+   this.getRemianTimes();
+    // 一进入就会播放背景音乐
+    this.creatAudio();
   },
   onHide() {
-    clearInterval(this.time)
+    clearInterval(this.time);
     this.innerAudioContext.destroy();
   },
+  onPullDownRefresh() {
+    // 上拉刷新
+    this.currrentGroupName = "全部分组";
+    this.pages = 10;
+    this.showDatalist = [];
+    this.selectionIndex = 0;
+    this.getALLactivityPlayer();
+    this.showData();
+  },
+
+  onReachBottom() {
+    if (this.pages >= this.allDatalist.length) {
+      wx.showToast({
+        title: "没有更多的数据",
+        icon: "success",
+        duration: 2000
+      });
+    } else {
+      this.pages += 10;
+      this.showData();
+      console.log(this.showDatalist);
+    }
+  },
   methods: {
+    // 获取报名量 浏览量
+    async getHot() {
+      let res = await this.$Api.getActivityList();
+      console.log(res);
+      this.totalRoll = res.data[0].enroll;
+      this.totalVote = res.data[0].sumVote;
+      this.totalBrowse = res.data[0].browse;
+      this.day= res.data[0].end;
+      console.log(this.day);
+      
+    },
+    //获取所有的数据
+    async getALLactivityPlayer() {
+      let res = await this.$Api.getActivityPlayer({
+        activityId: 1
+      });
+      this.allDatalist = res.rows;
+      console.log(res);
+
+      console.log(this.allDatalist);
+      this.showDatalist = this.allDatalist.slice(0, this.pages);
+    },
+
+    //获取搜索的数据
+    async getactivityPlayer() {
+      console.log(this.name);
+      if (this.name) {
+        let res = await this.$Api.getActivityPlayer({
+          activityId: 1,
+          name: this.name
+        });
+        console.log(res);
+        this.allDatalist = res.rows;
+        this.name = "";
+        console.log(this.allDatalist);
+
+        this.showData();
+      }
+    },
+    // 展示当前的数据，
+    showData() {
+      if (this.currrentGroupName === "全部分组") {
+        this.showDatalist = this.allDatalist.slice(0, this.pages);
+        console.log(this.showDatalist);
+      } else {
+        let res = this.allDatalist.filter(v => {
+          return v.groupName === this.currrentGroupName;
+        });
+        this.showDatalist = res.slice(0, this.pages);
+        console.log(this.pages);
+        console.log(this.showDatalist);
+      }
+    },
+
+    // picker 分组数据
+    getSeletion(e) {
+      this.selectionIndex = e;
+      this.currrentGroupName = this.array[e];
+      this.pages = 10;
+      this.showData();
+      console.log("aaaaaaa");
+    },
+
     //倒计时
-    getRemianTimes(day) {
-  this.time= setInterval(() => {
-        this.remianTimes = this.$index.remianTime(day);
+    getRemianTimes() {
+      this.time = setInterval(() => {
+        this.remianTimes = this.$index.remianTime(this.day);
       }, 1000);
     },
     //跳转送礼物页面
@@ -162,10 +260,10 @@ export default {
       });
     },
     //跳转选手详情页面
-    goActiveDetail() {
+    goActiveDetail(PlayerId,ActivityId) {
       wx.navigateTo({
-        url: "../activeDetail/main"
-      });
+        url: '../activeDetail/main?id='+PlayerId+'&activityId='+ActivityId
+      },);
     },
     // 背景音乐控制
     playAudio() {
@@ -186,15 +284,12 @@ export default {
       });
     }
   },
-
   components: {
     Swiper,
     Picker
   },
 
-  destroyed() {
-    
-  }
+  destroyed() {}
 };
 </script>
 
@@ -281,13 +376,11 @@ export default {
             width: 100%;
             height: 150px;
           }
-
           .botton {
             display: flex;
             flex-direction: column;
             padding: 10px;
             box-sizing: border-box;
-
             span {
               font-size: 12px;
             }
@@ -307,6 +400,12 @@ export default {
               text-align: center;
               line-height: 26px;
             }
+          }
+
+          .footer {
+            text-align: center;
+            height: 50px;
+            line-height: 50px;
           }
         }
       }

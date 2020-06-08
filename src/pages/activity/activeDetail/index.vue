@@ -11,25 +11,25 @@
       >
         <div class="user">
           <div class="user-img">
-            <img src="/static/images/01.jpg" alt />
+            <img :src="playerImg" alt />
           </div>
-          <span>罗艺</span>
+          <span>{{playerName}}</span>
         </div>
         <div class="statistical-table">
           <div>
-            <span>60</span>
+            <span>{{PlayerRank}}</span>
             <span>排名</span>
           </div>
           <div>
-            <span>1553</span>
+            <span>{{PlayerTicket}}</span>
             <span>票数</span>
           </div>
           <div>
-            <span>0</span>
+            <span>{{PlayerGift}}</span>
             <span>礼物</span>
           </div>
           <div>
-            <span>7008</span>
+            <span>{{PlayerBrowse}}</span>
             <span>浏览量</span>
           </div>
         </div>
@@ -43,7 +43,7 @@
           <div class="title">选手照片</div>
 
           <div class="img-big">
-            <img src="/static/images/01.jpg" alt />
+            <img :src="playerImg" alt />
           </div>
         </div>
 
@@ -58,68 +58,14 @@
               class="scroll-view"
             >
               <ul class="list">
-                <li>
+                <li v-for="(item,index) in contributionList" :key="index">
                   <div class="user-img">
                     <div>
-                      <img src="/static/images/01.jpg" alt />
+                      <img :src="item.extend3" alt />
                     </div>
                   </div>
-                  <div class="name">angel</div>
-                  <div class="num">20票</div>
-                </li>
-                <li>
-                  <div class="user-img">
-                    <div>
-                      <img src="/static/images/01.jpg" alt />
-                    </div>
-                  </div>
-                  <div class="name">angel</div>
-                  <div class="num">20票</div>
-                </li>
-                <li>
-                  <div class="user-img">
-                    <div>
-                      <img src="/static/images/01.jpg" alt />
-                    </div>
-                  </div>
-                  <div class="name">angel</div>
-                  <div class="num">20票</div>
-                </li>
-                <li>
-                  <div class="user-img">
-                    <div>
-                      <img src="/static/images/01.jpg" alt />
-                    </div>
-                  </div>
-                  <div class="name">angel</div>
-                  <div class="num">20票</div>
-                </li>
-                <li>
-                  <div class="user-img">
-                    <div>
-                      <img src="/static/images/01.jpg" alt />
-                    </div>
-                  </div>
-                  <div class="name">angel</div>
-                  <div class="num">20票</div>
-                </li>
-                <li>
-                  <div class="user-img">
-                    <div>
-                      <img src="/static/images/01.jpg" alt />
-                    </div>
-                  </div>
-                  <div class="name">angel</div>
-                  <div class="num">20票</div>
-                </li>
-                <li>
-                  <div class="user-img">
-                    <div>
-                      <img src="/static/images/01.jpg" alt />
-                    </div>
-                  </div>
-                  <div class="name">angel</div>
-                  <div class="num">20票</div>
+                  <div class="name">{{item.extend2}}</div>
+                  <div class="num">{{item.ticket}}票</div>
                 </li>
               </ul>
             </scroll-view>
@@ -130,16 +76,16 @@
           <div class="title">投票记录</div>
 
           <ul class="poll-list">
-            <li class="list">
+            <li class="list" v-for="(item,index) in pollList" :key="index">
               <div class="name-time">
-                <div class="name">彦希</div>
-                <div class="time">2020-4-2113 13:46:51</div>
+                <div class="name">{{item.extend2}}</div>
+                <div class="time">{{item.createTime}}</div>
               </div>
               <div class="num">+1</div>
             </li>
           </ul>
 
-          <div class="load-more">查看更多</div>
+          <div class="load-more" @click="getMore">查看更多</div>
         </div>
       </scroll-view>
     </view>
@@ -149,7 +95,7 @@
         <span class="iconfont icon-index"></span>
         <span>首页</span>
       </div>
-      <div class="pull-btn">
+      <div class="pull-btn" @click="setVote">
         <span class="title">投票</span>
         <span class="center iconfont icon-toupiao1"></span>
       </div>
@@ -165,8 +111,48 @@
 export default {
   props: {},
   data() {
-    return {};
+    return {
+      PlayerId: 0,
+      openId: "",
+      userInfo: {},
+      ActivityId: 0,
+      PlayerRank: 0,
+      PlayerTicket: 0,
+      PlayerBrowse: 0,
+      PlayerGift: 0,
+      playerImg: "",
+      contributionList: [],
+      pollList: [],
+      playerName: "",
+      pageNums: 1
+    };
   },
+  onLoad(options) {
+    console.log(options);
+    this.PlayerId = parseInt(options.id);
+    this.ActivityId = parseInt(options.activityId);
+    console.log(this.PlayerId);
+    let that = this;
+    wx.getStorage({
+      key: "openid",
+      success(res) {
+        console.log(res);
+        that.openId = res.data;
+      }
+    });
+    wx.getStorage({
+      key: "userInfo",
+      success(res) {
+        console.log(res);
+        that.userInfo = res.data;
+      }
+    });
+  },
+  onReady() {
+    this.PlayerDetail();
+    this.PlayerTicketList();
+  },
+
   computed: {},
   created() {},
   mounted() {},
@@ -175,11 +161,80 @@ export default {
     scroll(e) {
       console.log(e);
     },
+
+    // 投票接口
+
+    async setVote() {
+      let res = await this.$Api.getVote({
+        extend1: this.openId,
+        extend2: this.userInfo.nickName,
+        extend3: 1,
+        playerId: this.PlayerId
+      });
+      console.log(res);
+      if (res.success) {
+        wx.showToast({
+          title: "投票成功",
+          icon: "success",
+          duration: 2000
+        });
+      } else {
+        wx.showToast({
+          title: res.message,
+          icon: "none",
+          duration: 2000
+        });
+      }
+    },
     // 送礼物
     sendGift() {
       wx.navigateTo({
-        url: "../gift/main"
+        url: "../gift/main?id="+this.PlayerId+'&activityId='+this.ActivityId
       });
+    },
+
+    // 获取选手详情数据
+    async PlayerDetail() {
+      let res = await this.$Api.getPlayerDetail({
+        activityId: this.ActivityId,
+        id: this.PlayerId
+      });
+      console.log(res);
+      this.PlayerRank = res.data.player.i;
+      this.PlayerTicket = res.data.player.ticket;
+      this.PlayerBrowse = res.data.player.browse;
+      this.PlayerGift = res.data.player.gift;
+      this.playerImg = res.data.player.coverImg;
+      this.playerName = res.data.player.name;
+      this.contributionList = res.data.hdPlayerGiftlist;
+    },
+
+    // 获取投票纪录数据
+    async PlayerTicketList() {
+      let res = await this.$Api.getPlayerTicket({
+        playerId: this.PlayerId,
+        pageSize: 5,
+        pageNum: this.pageNums
+      });
+      console.log(res);
+      this.pollList.length < res.total;
+
+      if (res.total <= 5) {
+        this.pollList = res.rows;
+      } else if (res.total > 5 && this.pollList.length < res.total) {
+        this.pollList = [...this.pollList, ...res.rows];
+        this.pageNums++;
+      } else {
+        wx.showToast({
+          title: "没有更多了....",
+          icon: "success",
+          duration: 2000
+        });
+      }
+    },
+
+    getMore() {
+      this.PlayerTicketList();
     }
   },
   components: {}

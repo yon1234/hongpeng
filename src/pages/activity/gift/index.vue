@@ -3,25 +3,25 @@
     <div class="gift">
       <div class="user">
         <div class="user-img">
-          <img src="/static/images/01.jpg" alt />
+          <img :src="players.coverImg" alt />
         </div>
-        <span>罗艺</span>
+        <span>{{players.name}}</span>
       </div>
       <div class="statistical-table">
         <div>
-          <span>60</span>
+          <span>{{players.i}}</span>
           <span>排名</span>
         </div>
         <div>
-          <span>1553</span>
+          <span>{{players.ticket}}}</span>
           <span>票数</span>
         </div>
         <div>
-          <span>0</span>
+          <span>{{players.gift}}</span>
           <span>礼物</span>
         </div>
         <div>
-          <span>7008</span>
+          <span>{{players.browse}}</span>
           <span>浏览量</span>
         </div>
       </div>
@@ -29,38 +29,21 @@
       <div class="gift-list">
         <div class="title">送礼物加票数</div>
         <ul class="list">
-          <li class="list-item" @click="check">
-            <div class="top">666</div>
+          <li
+            class="list-item"
+            v-for="(item,index) in giftlist "
+            :key="index"
+            :class="{active:currentIndex==index}"
+            @click="changeIndex(index,item.ticket,item.price)"
+          >
+            <div class="top">{{item.name}}</div>
             <div class="gift-img">
-              <img src="/static/images/timg.gif" alt />
+              <img :src="item.icon" alt />
             </div>
-            <div class="num">+20票</div>
-          </li>
-
-          <li class="list-item">
-            <div class="top">666</div>
-            <div class="gift-img">
-              <img src="/static/images/timg.gif" alt />
-            </div>
-            <div class="num">+20票</div>
-          </li>
-
-          <li class="list-item">
-            <div class="top">666</div>
-            <div class="gift-img">
-              <img src="/static/images/timg.gif" alt />
-            </div>
-            <div class="num">+20票</div>
-          </li>
-
-          <li class="list-item">
-            <div class="top">666</div>
-            <div class="gift-img">
-              <img src="/static/images/timg.gif" alt />
-            </div>
-            <div class="num">+20票</div>
+            <div class="num">+{{item.ticket}}票</div>
           </li>
         </ul>
+
         <div class="compute">
           <div class="total-price">
             <span>￥</span>
@@ -77,7 +60,7 @@
       </div>
     </div>
 
-    <div class="now-send">立即送出</div>
+    <div class="now-send" @click="payGift">立即送出</div>
   </div>
 </template>
 
@@ -86,41 +69,99 @@ export default {
   props: {},
   data() {
     return {
-       
-
       num: 1,
-      price:6,
-      pollnum:20
+      price: 0.01,
+      pollnum: 20,
+      PlayerId: 0,
+      ActivityId: 0,
+      players: {},
+      giftlist: [],
+
+      currentIndex: 0
     };
   },
   computed: {
-        totalprice(){
-          return this.num*this.price
-      },
-      totalnum(){
-            return this.num*this.pollnum
-      }
+    totalprice() {
+      return this.num * this.price;
+    },
+    totalnum() {
+      return this.num * this.pollnum;
+    }
+  },
+
+  onLoad(options) {
+    this.PlayerId = parseInt(options.id);
+    this.ActivityId = parseInt(options.activityId);
+
+    this.getGiftlist();
   },
   created() {},
   mounted() {},
   watch: {},
   methods: {
+    // 获取礼物接口
+    async getGiftlist() {
+      let res = await this.$Api.getGiftList({
+        activityId: 1,
+        id: this.PlayerId
+      });
+      console.log(res);
+      this.players = res.data.player;
+      this.giftlist = res.data.hdGift;
+    },
 
+    //改变礼物当前索引index
+
+    changeIndex(index, ticket, prices) {
+      console.log(index);
+      this.currentIndex = index;
+      this.price = prices;
+      this.pollnum = ticket;
+    },
 
     add() {
       this.num++;
     },
     reduce() {
       this.num--;
-      if(this.num<1){
-          this.num=1
+      if (this.num < 1) {
+        this.num = 1;
       }
+    },
+
+    // 支付
+    payGift() {
+      console.log(11111111);
+      let that = this;
+      wx.login({
+        success: async function(result) {
+          console.log(result);
+          console.log(that.totalprice);
+          let res = await that.$Api.wxPay({
+            total_fee: that.totalprice * 100,
+            js_code: result.code
+          });
+          console.log(res);
+          if (res.code == 0) {
+            wx.requestPayment({
+              timeStamp: res.data.timeStamp,
+              nonceStr: res.data.nonceStr,
+              package: res.data.package,
+              signType: "MD5",
+              paySign: res.data.paySign,
+              success(resp) {
+                console.log(resp);
+              },
+              fail(resp) {
+                console.log(resp);
+              }
+            });
+          }
+        }
+      });
     }
   },
-  components: {
-
-    
-  }
+  components: {}
 };
 </script>
 
@@ -135,7 +176,6 @@ export default {
       display: flex;
       flex-direction: column;
       align-items: center;
-
       .user-img {
         width: 80px;
         height: 80px;
@@ -176,6 +216,7 @@ export default {
         flex-wrap: wrap;
         padding-top: 10px;
         background-color: rgb(241, 239, 239);
+
         .list-item {
           width: 30%;
           margin-bottom: 10px;
@@ -199,6 +240,11 @@ export default {
             border-bottom: 2px solid springgreen;
           }
         }
+
+        .active {
+          background-color: rgb(238, 238, 238);
+          border: 1px solid yellowgreen;
+        }
       }
     }
 
@@ -206,14 +252,15 @@ export default {
       display: flex;
       justify-content: space-between;
       padding-top: 10px;
+      margin-bottom: 40px;
       .total-price {
-        width: 30%;
-        font-size: 14px;
+        width: 40%;
+        font-size: 12px;
         color: rgb(184, 184, 184);
         .price {
-          font-size: 18px;
+          font-size: 14px;
           padding-right: 8px;
-          font-weight: 100;
+          font-weight: 400;
         }
       }
 
@@ -248,6 +295,7 @@ export default {
     width: 100%;
     bottom: 0;
     color: white;
+    z-index: 10;
   }
 }
 </style>

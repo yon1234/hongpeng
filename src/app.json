@@ -1,5 +1,6 @@
 {
   "pages": [
+    
     "pages/home/main",
     "pages/index/main",
     "pages/activity/main",
@@ -8,7 +9,19 @@
     "pages/activity/apply/main",
     "pages/activity/activeDetail/main",
     "pages/activity/gift/main",
-    "pages/activity/rank/main"
+    "pages/activity/rank/main",
+    "pages/questionnaire/main",
+    "pages/questionnaire/question1/main",
+    "pages/questionnaire/question2/main",
+    "pages/questionnaire/question3/main",
+    "pages/questionnaire/question4/main",
+    "pages/questionnaire/question5/main",
+    "pages/questionnaire/question6/main",
+    "pages/questionnaire/question7/main",
+    "pages/questionnaire/question8/main",
+    "pages/questionnaire/submitIndex/main",
+    "pages/logs/main",
+    "pages/questionnaire/luckyDraw/main"
    ],
   "window": {
     "backgroundTextStyle": "light",

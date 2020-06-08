@@ -8,10 +8,10 @@
       <dl class="activ-list">
         <dt>热门活动</dt>
         <dd>
-          <div @click="goHotactiv">
-            <span class="index">1</span>
-            <p class="title">宏鹏教育程序员美女比赛</p>
-            <span class="num">7778</span>
+          <div @click="goHotactiv" v-for='(item,index) in activeid' :key='index'>
+            <span class="index">{{item.id}}</span>
+            <p class="title">{{item.name}}</p>
+            <span class="num">{{item.browse}}</span>
             <span class="hot-icon iconfont icon-huo"></span>
           </div>
         </dd>
@@ -30,6 +30,7 @@ export default {
   props: {},
   data() {
     return {
+     activeid:[],
       images: [
         {
           url:
@@ -44,9 +45,21 @@ export default {
   },
   computed: {},
   created() {},
+  onLoad() {
+   
+    this.getActive()
+  },
   mounted() {},
   watch: {},
   methods: {
+    getActive() {
+      this.$Api.getActivityList()
+        .then(res => {
+           this.activeid=res.data
+          console.log(res);
+        });
+    },
+
     goHotactiv() {
       wx.reLaunch({
         url: "./hotactiv/main"
@@ -96,8 +109,8 @@ export default {
         .hot-icon {
           padding-right: 20px;
         }
-        .icon-huo{
-            color: tomato;
+        .icon-huo {
+          color: tomato;
         }
       }
     }

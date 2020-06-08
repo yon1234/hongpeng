@@ -4,7 +4,6 @@ var snowsNum
 var timer
 wx.getSystemInfo({
   success: (res) => {
-    console.log(res);
     screenW = res.screenWidth
     screenH = res.screenHeight
   },
@@ -15,12 +14,10 @@ class Snow {
     this.snow = []
     this.init()
   }
-
   init() {
     this.canvas = wx.createCanvasContext("snow", this)
     this.generateSnow()
   }
-
   //随机生成雪花半径
   rand(num) {
     return Math.floor(Math.random() * num + 1)
@@ -65,9 +62,7 @@ class Snow {
     }
     canvas.draw()
   }
-
 }
-
 function play() {
   //清除定时器
   clearInterval(snowsNum)
@@ -78,7 +73,6 @@ function play() {
   }, 100)
 
 }
-
 export default {
   play
 }

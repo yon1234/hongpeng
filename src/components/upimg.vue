@@ -20,10 +20,11 @@
  
 <script>
 export default {
-  props: ["width", "height", "max", "srcs"],
+  props: ["width", "height", "max", "srcs","urls"],
   data() {
     return {
-      urls: []
+      // urls: [],
+      base64:[]
     };
   },
   mounted() {
@@ -37,12 +38,19 @@ export default {
         sizeType: ["original", "compressed"],
         sourceType: ["album", "camera"],
         success: function(res) {
+          // 、调用文件管理器
+          let base64 = wx
+            .getFileSystemManager()
+            .readFileSync(res.tempFilePaths[0], "base64");
           res.tempFilePaths.forEach(v => {
             that.urls.push(v);
+            that.base64.push({ img: "data:image/png;base64," + base64 });
           });
           that.$emit("choosed", {
             all: that.urls,
-            currentUpload: res.tempFilePaths
+            currentUpload: res.tempFilePaths,
+            base64:that.base64
+
           });
         }
       });
@@ -59,6 +67,7 @@ export default {
             });
           } else {
             that.urls.splice(index, 1);
+             that.base64.splice(index, 1);
             that.$emit("delete", that.urls);
           }
         }

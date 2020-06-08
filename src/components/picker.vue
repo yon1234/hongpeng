@@ -8,10 +8,10 @@
 
 <script>
 export default {
-    props: ['array'],
+    props: ['array','selectionIndex'],
     data() {
         return {
-            selectionIndex:0
+        
         };
     },
     computed: {
@@ -27,9 +27,11 @@ export default {
 
     },
     methods: {
-  bindPickerChange: function(e) {
+       bindPickerChange: function(e) {
       console.log(e);
       this.selectionIndex = e.mp.detail.value;
+         this.$emit("passToIndex", this.selectionIndex); 
+       
     }
     },
     components: {

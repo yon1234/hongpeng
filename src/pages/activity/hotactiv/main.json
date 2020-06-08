@@ -1,5 +1,7 @@
 {
-    "navigationBarTitleText": "宏鹏教育程序员美学摄影",
-    "navigationBarBackgroundColor": "#f74747"
-
+    "navigationBarTitleText": "摄影",
+    "navigationBarBackgroundColor": "#f74747", 
+    "enablePullDownRefresh": true, 
+    "backgroundTextStyle":"dark"   ,
+    "onReachBottomDistance": 150 
   }

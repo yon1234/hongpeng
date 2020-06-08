@@ -14,107 +14,44 @@
         <div class="second">
           <div class="rank-num">N0.2</div>
           <div class="user-img">
-            <img src="/static/images/01.jpg" alt />
+            <img :src="PlayerList[0].coverImg" alt />
           </div>
-          <div class="name">高自立</div>
-          <div class="num">245票</div>
+          <div class="name">{{PlayerList[0].name}}</div>
+          <div class="num">{{PlayerList[0].ticket}}票</div>
         </div>
         <div class="one">
-          <div class="rank-num"><img src="/static/images/huangguan.png" alt=""></div>
-          <div class="user-img">
-            <img src="/static/images/01.jpg" alt />
+          <div class="rank-num">
+            <img src="/static/images/huangguan.png" alt />
           </div>
-          <div class="name">高自立</div>
-          <div class="num">245票</div>
+          <div class="user-img">
+            <img :src="PlayerList[1].coverImg" alt />
+          </div>
+          <div class="name">{{PlayerList[1].name}}</div>
+          <div class="num">{{PlayerList[1].ticket}}票</div>
         </div>
         <div class="three">
-          <div class="rank-num">N0.2</div>
+          <div class="rank-num">N0.3</div>
           <div class="user-img">
-            <img src="/static/images/01.jpg" alt />
+            <img :src="PlayerList[2].coverImg" alt />
           </div>
-          <div class="name">高自立</div>
-          <div class="num">245票</div>
+          <div class="name">{{PlayerList[2].name}}</div>
+          <div class="num">{{PlayerList[2].ticket}}票</div>
         </div>
       </div>
 
       <div class="rank-list">
         <ul class="rank-under-four">
-          <li class="list-item">
+          <li class="list-item" v-for="(item,index) in  PlayerList1" :key="index">
             <div class="left">
               <div class="user-img">
-                <img src="/static/images/01.jpg" alt />
+                <img :src="item.coverImg" alt />
               </div>
               <div class="name-num">
-                <span class="name">9205吴明军</span>
-                <span class="num">143票</span>
+                <span class="name">{{item.name}}</span>
+                <span class="num">{{item.ticket}}票</span>
               </div>
             </div>
-            <div class="right">4</div>
-          </li>
-
-          <li class="list-item">
-            <div class="left">
-              <div class="user-img">
-                <img src="/static/images/01.jpg" alt />
-              </div>
-              <div class="name-num">
-                <span class="name">9205吴明军</span>
-                <span class="num">143票</span>
-              </div>
-            </div>
-            <div class="right">4</div>
-          </li>
-
-          <li class="list-item">
-            <div class="left">
-              <div class="user-img">
-                <img src="/static/images/01.jpg" alt />
-              </div>
-              <div class="name-num">
-                <span class="name">9205吴明军</span>
-                <span class="num">143票</span>
-              </div>
-            </div>
-            <div class="right">4</div>
-          </li>
-
-          <li class="list-item">
-            <div class="left">
-              <div class="user-img">
-                <img src="/static/images/01.jpg" alt />
-              </div>
-              <div class="name-num">
-                <span class="name">9205吴明军</span>
-                <span class="num">143票</span>
-              </div>
-            </div>
-            <div class="right">4</div>
-          </li>
-
-          <li class="list-item">
-            <div class="left">
-              <div class="user-img">
-                <img src="/static/images/01.jpg" alt />
-              </div>
-              <div class="name-num">
-                <span class="name">9205吴明军</span>
-                <span class="num">143票</span>
-              </div>
-            </div>
-            <div class="right">4</div>
-          </li>
-
-          <li class="list-item">
-            <div class="left">
-              <div class="user-img">
-                <img src="/static/images/01.jpg" alt />
-              </div>
-              <div class="name-num">
-                <span class="name">9205吴明军</span>
-                <span class="num">143票</span>
-              </div>
-            </div>
-            <div class="right">4</div>
+            <div class="right">{{index+4}}</div>
           </li>
         </ul>
       </div>
@@ -128,30 +65,39 @@ export default {
   data() {
     return {
       remianTimes: "",
-      time:'',
-      day: "2020-05-31 00:00"
+      time: "",
+      day: "2020-05-31 00:00",
+      PlayerList: [],
+      PlayerList1: []
     };
   },
   computed: {},
-  created() {
-  
+  created() {},
+  onLoad() {
+    this.getPlayerRank();
   },
-
-
-  onShow(){
-     this.getRemianTimes(this.day);
+  onShow() {
+    this.getRemianTimes(this.day);
   },
-  onHide(){
-    clearInterval(this.time)
+  onHide() {
+    clearInterval(this.time);
   },
   mounted() {},
   watch: {},
   methods: {
     getRemianTimes(day) {
-
-   this.time= setInterval(() => {
+      this.time = setInterval(() => {
         this.remianTimes = this.$index.remianTime(day);
       }, 1000);
+    },
+//获取排名
+    async getPlayerRank() {
+      let res = await this.$Api.getPlayerRank({
+        activityId: 1
+      });
+
+      this.PlayerList = res.data.playerList;
+      this.PlayerList1 = res.data.playerList1;
     }
   },
   components: {}
@@ -223,13 +169,13 @@ export default {
         .rank-num {
           color: orange;
           display: flex;
-         justify-content: center;
-         align-items: center;
-         img{
-           padding-left: 8px;
-          width: 70px;
-          height: 20px;
-         }
+          justify-content: center;
+          align-items: center;
+          img {
+            padding-left: 8px;
+            width: 70px;
+            height: 20px;
+          }
         }
         .user-img {
           height: 50px;

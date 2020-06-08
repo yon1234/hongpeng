@@ -1,10 +1,40 @@
 <script>
 export default {
- 
-}
+  onLaunch: function() {
+    var that = this;
+    // 查看是否授权
+    wx.getSetting({
+      success: function(res) {
+        if (res.authSetting["scope.userInfo"]) {
+          wx.getUserInfo({
+            success: function(res) {
+              // 用户已经授权过,不需要显示授权页面,所以不需要改变 isHide 的值
+              // 根据自己的需求有其他操作再补充
+              // 我这里实现的是在用户授权成功后，调用微信的 wx.login 接口，从而获取code
+              console.log(res);
+              wx.setStorage({
+                key: "userInfo",
+                data: res.userInfo
+              })
+             
+            }
+          });
+        } else {
+          // 用户没有授权
+          // 改变 isHide 的值，显示授权页面
+          console.log("meiyoushouquan");
+
+          wx.reLaunch({
+            url: "/pages/logs/main"
+          });
+        }
+      }
+    });
+  }
+};
 </script>
 
 <style>
 /* 引入阿里巴巴矢量图标 */
-@import './../static/font/iconfont.css';
+@import "./../static/font/iconfont.css";
 </style>
